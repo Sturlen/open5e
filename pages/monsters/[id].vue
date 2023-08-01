@@ -168,6 +168,20 @@
         </nuxt-link>
       </p>
     </div>
+    <div
+      class="grid max-w-[40rem] grid-flow-row grid-cols-2 rounded-xl border-4 border-red-600 p-4"
+    >
+      <img
+        class="w-[70%]"
+        src="https://koboldpress.com/kpstore/wp-content/uploads/Tome-of-Beasts-1-Cover.jpg"
+      />
+      <div class="flex flex-col">
+        <p class="text-xl">Tome of Beasts (2023)</p>
+        <em>Kobold Press</em>
+        <p>Source: <a>SRD</a></p>
+        <p>License: <a>OGL</a></p>
+      </div>
+    </div>
   </section>
 </template>
 
