@@ -6,7 +6,7 @@ export default defineNuxtConfig({
       mode: 'out-in',
     },
     /*
-     ** Headers of the page
+     * Deafults for head tags. can be overwitten in pages with `useHead()`.
      */
     head: {
       title: 'Open5e',
@@ -39,9 +39,16 @@ export default defineNuxtConfig({
     preset: 'digital-ocean',
   },
   modules: ['@pinia/nuxt', '@nuxtjs/tailwindcss', 'nuxt-icon'],
+  vite: {
+    resolve: {
+      alias: {
+        vue: 'vue/dist/vue.esm-bundler',
+      }
+    },
+  },
   runtimeConfig: {
     public: {
-      apiUrl: process.env.API_URL || 'https://api.open5e.com',
+      apiUrl: process.env.API_URL ?? 'https://api.open5e.com',
     },
   },
   tailwindcss: {
