@@ -97,12 +97,17 @@ const magicItemFields = [
 
 const magicItemOrder = 'slug';
 
+import { MonsterSchema, type Monster } from '@sturlen/open5e/monsters';
+MonsterSchema;
+
+const mons: Monster[] = [];
+
 export const useMainStore = defineStore({
   id: 'main',
   state: () => {
     return {
       spellsList: [],
-      monstersList: [],
+      monstersList: mons,
       magicItemsList: [],
       classes: [],
       races: [],

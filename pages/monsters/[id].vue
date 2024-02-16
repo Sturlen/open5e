@@ -265,11 +265,15 @@
   </main>
 </template>
 
-<script setup>
-const monster = await useFetchArticle({
-  slug: useRoute().params.id,
-  category: 'monsters',
-});
+<script setup lang="ts">
+import { Monster, MonsterSchema } from '@sturlen/open5e/monsters';
+
+const monster: Monster = MonsterSchema.parse(
+  await useFetchArticle({
+    slug: useRoute().params.id,
+    category: 'monsters',
+  })
+);
 
 // Helper functions
 const calcMod = (score) => Math.floor((score - 10) / 2);
