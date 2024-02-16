@@ -66,4 +66,5 @@ export default defineNuxtConfig({
     configPath: '~/tailwind.config.ts',
     cssPath: '~/styles/tailwind.css',
   },
+  ssr: false,
 });
