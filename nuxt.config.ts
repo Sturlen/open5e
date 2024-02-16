@@ -38,28 +38,10 @@ export default defineNuxtConfig({
   nitro: {
     preset: 'digital-ocean',
   },
-  // vite: {
-  //   resolve: {
-  //     alias: {
-  //       vue: 'vue/dist/vue.esm-bundler',
-  //     }
-  //   },
-  // },
   modules: ['@pinia/nuxt', '@nuxtjs/tailwindcss', 'nuxt-icon'],
-  buildModules: ['@nuxtjs/pinia'],
   runtimeConfig: {
     public: {
       apiUrl: process.env.API_URL || 'https://api.open5e.com',
-    },
-  },
-  router: {
-    prefetchLinks: false,
-  },
-  hooks: {
-    'vite:extendConfig': (config, { isClient, isServer }) => {
-      if (isClient) {
-        config.resolve.alias.vue = 'vue/dist/vue.esm-bundler';
-      }
     },
   },
   tailwindcss: {
