@@ -12,9 +12,9 @@
     "postinstall": "nuxt prepare",
     "prepare": "husky install",
     "lint": "npm run lint:js && npm run lint:prettier",
-    "lint:ci": "eslint --ext .js,.vue --ignore-path .gitignore .",
-    "lint:js": "eslint --ext '.js,.vue' --ignore-path .gitignore .",
-    "lint:prettier": "prettier --check --ignore-path .gitignore '**/*.{js,vue}'",
+    "lint:ci": "eslint --ext .js,.vue --ignore-path .gitignore ./",
+    "lint:js": "eslint --ext .js,.vue --ignore-path .gitignore ./",
+    "lint:prettier": "prettier --check --ignore-path .gitignore **/*.{js,vue}",
     "lintfix": "npm run lint:js -- --fix && npm run lint:prettier -- --write",
     "pre-commit": "npx pretty-quick --staged && npm run lintfix",
     "test": "echo 'Coming soon, hopefully!'"
