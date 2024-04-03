@@ -384,3 +384,75 @@ export const useMainStore = defineStore({
     },
   },
 });
+
+export const useDocuments = () => {
+  const api = axios.create({
+    baseURL: useRuntimeConfig().public.apiUrl,
+    headers: { Accept: 'application/json' },
+  });
+  return useQuery({
+    queryKey: ['backgrounds'],
+    queryFn: async () => {
+      const res = await api.get('/documents/');
+      const results = res.data.results;
+
+      if (!Array.isArray(results)) {
+        throw new Error('Invalid data');
+      }
+
+      console.log('backgrounds', results);
+
+      return results;
+    },
+    refetchOnWindowFocus: false,
+  });
+};
+
+function loadSourcesFromLocal() {
+  if (!process.client) {
+    return [];
+  }
+  const savedSources = localStorage.getItem('sources') || '[]';
+
+  const sources = JSON.parse(savedSources);
+
+  if (!Array.isArray(sources)) {
+    return [];
+  }
+
+  return sources;
+}
+
+export function saveSourcesToLocal(sources = []) {
+  $sources.value = sources;
+  console.log('sourcess', $sources.value);
+  localStorage.setItem('sources', JSON.stringify(sources));
+}
+
+const $sources = ref(loadSourcesFromLocal());
+
+console.log('sources', $sources.value);
+
+export const useBackgrounds = () => {
+  const api = axios.create({
+    baseURL: useRuntimeConfig().public.apiUrl,
+    headers: { Accept: 'application/json' },
+  });
+  return useQuery({
+    queryKey: ['backgrounds', $sources],
+    queryFn: async () => {
+      console.log('fetching backgrounds');
+      const res = await api.get(
+        `/backgrounds/?document__slug__in=${$sources.value.join(',')}`
+      );
+      const results = res.data.results;
+
+      if (!Array.isArray(results)) {
+        throw new Error('Invalid data');
+      }
+
+      return results;
+    },
+    staleTime: Infinity,
+  });
+};

@@ -45,7 +45,7 @@ export default defineNuxtConfig({
   //     }
   //   },
   // },
-  modules: ['@pinia/nuxt', '@nuxtjs/tailwindcss', 'nuxt-icon'],
+  modules: ['@pinia/nuxt', '@nuxtjs/tailwindcss', 'nuxt-icon', '@hebilicious/vue-query-nuxt'],
   buildModules: ['@nuxtjs/pinia'],
   runtimeConfig: {
     public: {

@@ -64,11 +64,66 @@
   </ModalDialog>
 </template>
 
-<script setup>
-import { useMainStore } from '~/store';
+<script>
+import { saveSourcesToLocal, useMainStore } from '~/store';
 import SourceTag from '~/components/SourceTag.vue';
 
-const emit = defineEmits(['close']);
+export default {
+  data() {
+    return {
+      selectedSources: [],
+      open: false,
+    };
+  },
+  computed: {
+    store() {
+      return useMainStore();
+    },
+    sourceSelection: function () {
+      return this.store.sourceSelection;
+    },
+    documents: function () {
+      return this.store.documents;
+    },
+    groupedDocuments: function () {
+      return this.documents.reduce((grouped, document) => {
+        (grouped[document.organization] =
+          grouped[document.organization] || []).push(document);
+        return grouped;
+      }, {});
+    },
+    selectedSourcesComputed: {
+      get: function () {
+        return this.selectedSources;
+      },
+      set: function (newValue) {
+        this.selectedSources = newValue;
+      },
+    },
+  },
+  watch: {
+    'store.sourceSelection': function (newVal) {
+      this.selectedSources = [...newVal];
+    },
+  },
+  created() {
+    this.searchText = this.$route.query.text;
+    this.selectedSources = this.store.sourceSelection;
+  },
+  methods: {
+    closeModal() {
+      this.$emit('close'); // emits a 'close' event to the parent component
+      setTimeout(() => {
+        this.selectedSources = this.store.sourceSelection;
+      }, 300);
+    },
+    saveSelection() {
+      saveSourcesToLocal(this.selectedSources);
+      this.closeModal();
+    },
+  },
+};
+</script>
 
 const selectedSources = ref([]);
 const searchText = ref('');

@@ -1,5 +1,8 @@
 <template>
-  <section class="docs-container container">
+  <section v-if="error">
+    <p>{{ error.message }}</p>
+  </section>
+  <section v-else-if="backgrounds" class="docs-container container">
     <h1>Backgrounds</h1>
     <div
       v-if="backgrounds.length == 0"
@@ -14,7 +17,7 @@
       </div>
     </div>
     <div v-else class="docs-toc">
-      <ul v-if="backgrounds">
+      <ul>
         <li v-for="background in backgrounds" :key="background.slug">
           <nuxt-link tag="a" :to="`/backgrounds/${background.slug}`">
             {{ background.name }}
@@ -28,16 +31,22 @@
       </ul>
     </div>
   </section>
+  <section v-else>
+    <p>Loading</p>
+  </section>
 </template>
 
-<script setup>
-import { useMainStore } from '~/store';
+<script>
+import { useBackgrounds, useMainStore } from '~/store';
 import SourceTag from '~/components/SourceTag.vue';
 const store = useMainStore();
 
-const backgrounds = computed(() => store.allBackgrounds);
-
-onBeforeMount(() => {
-  store.loadBackgrounds();
-});
+export default {
+  components: { SourceTag },
+  setup() {
+    console.log('backgrounds');
+    const { data: backgrounds, error, isLoading } = useBackgrounds();
+    return { backgrounds, error, isLoading };
+  },
+};
 </script>
