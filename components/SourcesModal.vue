@@ -1,7 +1,6 @@
 <template>
   <ModalDialog>
     <slot>
-      <h2 class="mt-0 border-b-4 border-red-400 pb-2">Select Sources</h2>
       <div class="mt-2">
         <fieldset>
           <legend class="sr-only">Source Selection</legend>
@@ -65,7 +64,7 @@
 </template>
 
 <script>
-import { saveSourcesToLocal, useMainStore } from '~/store';
+import { saveSourcesToLocal, useDocuments, useMainStore } from '~/store';
 import SourceTag from '~/components/SourceTag.vue';
 
 export default {
@@ -81,16 +80,6 @@ export default {
     },
     sourceSelection: function () {
       return this.store.sourceSelection;
-    },
-    documents: function () {
-      return this.store.documents;
-    },
-    groupedDocuments: function () {
-      return this.documents.reduce((grouped, document) => {
-        (grouped[document.organization] =
-          grouped[document.organization] || []).push(document);
-        return grouped;
-      }, {});
     },
     selectedSourcesComputed: {
       get: function () {
@@ -125,49 +114,17 @@ export default {
 };
 </script>
 
-const selectedSources = ref([]);
-const searchText = ref('');
-const store = computed(() => useMainStore());
+<script setup>
+console.log('render');
 
-const documents = computed(() => {
-  return store.value.documents;
-});
-const groupedDocuments = computed(() => {
-  return documents.value.reduce((grouped, document) => {
-    (grouped[document.organization] =
-      grouped[document.organization] || []).push(document);
-    return grouped;
-  }, {});
-});
-const selectedSourcesComputed = computed({
-  get: function () {
-    return selectedSources.value;
-  },
-  set: function (newValue) {
-    selectedSources.value = newValue;
-  },
-});
-
-watch(
-  () => store.value.sourceSelection,
-  (newVal) => {
-    selectedSources.value = [...newVal];
-  }
+const { data: documents, error, isLoading } = useDocuments();
+const groupedDocuments = computed(() =>
+  documents.value
+    ? documents.value.reduce((grouped, document) => {
+        (grouped[document.organization] =
+          grouped[document.organization] || []).push(document);
+        return grouped;
+      }, {})
+    : []
 );
-
-onMounted(() => {
-  searchText.value = useRoute().query.text;
-  selectedSources.value = store.value.sourceSelection;
-});
-
-function closeModal() {
-  emit('close'); // emits a 'close' event to the parent component
-  setTimeout(() => {
-    selectedSources.value = store.value.sourceSelection;
-  }, 300);
-}
-function saveSelection() {
-  store.value.setSources(selectedSources.value);
-  closeModal();
-}
 </script>
