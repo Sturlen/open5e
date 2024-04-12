@@ -112,6 +112,7 @@ onMounted(() => {
     });
   }
   filter.value = useRoute().params.charclass;
+  store.loadSpells();
 });
 </script>
 
