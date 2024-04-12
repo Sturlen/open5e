@@ -77,9 +77,7 @@
                 :key="spellclass"
               >
                 <!-- the item in the spell_list list -->
-                <span class="spell_lists" @click="filterByClass(spellclass)">{{
-                  capitalize(spellclass)
-                }}</span>
+                <span class="spell_lists">{{ capitalize(spellclass) }}</span>
                 <!-- comma after any item that isn't the last -->
                 <span v-if="index + 1 < spell.spell_lists.length">, </span>
               </span>
