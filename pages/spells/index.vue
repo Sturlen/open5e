@@ -131,7 +131,6 @@ const spellsListed = computed(() => {
   currentSortProperty.value;
   let start = pageNumber.value * 50;
   let end = start + 50;
-  console.log('start', start, 'end', end);
   return sortedSpells.value.splice(start, end);
 });
 const filteredSpells = computed(() => {
@@ -158,7 +157,6 @@ const capitalize = (str) => {
 const sort = (prop, dir) => {
   currentSortProperty.value = prop;
   currentSortDir.value = dir;
-  console.log('sort', prop, dir);
 };
 
 const getAriaSort = (columName) => {
