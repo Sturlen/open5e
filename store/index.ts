@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
+import { useAPI } from '~/composables/useAPI';
 
 const monsterChallengeRatings = [
   0,
@@ -437,13 +438,8 @@ export const useBackgrounds = () => {
     queryKey: ['backgrounds', $sources],
     queryFn: async () => {
       console.log('fetching backgrounds');
-      const res = await axios.get(
-        `/backgrounds/?document__slug__in=${$sources.value.join(',')}`,
-        {
-          baseURL: useRuntimeConfig().public.apiUrl,
-          headers: { Accept: 'application/json' },
-        }
-      );
+
+      const res = await useAPI().backgrounds($sources.value.join(','));
       const results = res.data.results;
 
       if (!Array.isArray(results)) {
