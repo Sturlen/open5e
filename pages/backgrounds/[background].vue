@@ -42,8 +42,5 @@
 </template>
 
 <script setup>
-const background = await useFetchArticle({
-  slug: useRoute().params.background,
-  category: 'backgrounds',
-});
+const { data: background } = useBackground(useRoute().params.background);
 </script>

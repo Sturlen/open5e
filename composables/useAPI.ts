@@ -21,6 +21,11 @@ export const useAPI = () => {
 
       return res.data.results;
     },
+    fetchBackground: async (slug: string) => {
+      console.log('fetching background', slug);
+      const res = await api.get(`/backgrounds/${slug}/`);
+      return res.data;
+    },
   };
 };
 
@@ -48,6 +53,15 @@ export const useBackgrounds = () => {
   return useQuery({
     queryKey: ['backgrounds', sources],
     queryFn: () => backgrounds(sources.value),
+    staleTime: Infinity,
+  });
+};
+
+export const useBackground = (slug: string) => {
+  const { fetchBackground } = useAPI();
+  return useQuery({
+    queryKey: ['background', slug],
+    queryFn: () => fetchBackground(slug),
     staleTime: Infinity,
   });
 };
