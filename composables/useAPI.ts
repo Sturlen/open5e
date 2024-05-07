@@ -1,5 +1,9 @@
-import { useQuery } from '@tanstack/vue-query';
+import { queryOptions, useQuery } from '@tanstack/vue-query';
 import axios from 'axios';
+
+export const API_ENDPOINTS = {
+  backgrounds: 'v1/backgrounds',
+} as const;
 
 export const useAPI = () => {
   const API_URL = useRuntimeConfig().public.apiUrl;
@@ -10,9 +14,9 @@ export const useAPI = () => {
   });
 
   return {
-    backgrounds: async (sources: string[]) => {
+    findMany: async (endpoint: string, sources: string[]) => {
       console.log('fetching backgrounds', sources);
-      const res = await api.get('/backgrounds', {
+      const res = await api.get(endpoint, {
         params: {
           limit: 5000,
           document__slug__in: sources.join(','),
@@ -21,9 +25,9 @@ export const useAPI = () => {
 
       return res.data.results;
     },
-    fetchBackground: async (slug: string) => {
+    get: async (endpoint: string, slug: string) => {
       console.log('fetching background', slug);
-      const res = await api.get(`/backgrounds/${slug}/`);
+      const res = await api.get(`/${endpoint}/${slug}/`);
       return res.data;
     },
   };
@@ -48,20 +52,20 @@ watch(sources, (sources) => {
   console.log('sources changed', sources);
 });
 
-export const useBackgrounds = () => {
-  const { backgrounds } = useAPI();
+export const useFindMany = (endpoint: string) => {
+  const { findMany } = useAPI();
   return useQuery({
-    queryKey: ['backgrounds', sources],
-    queryFn: () => backgrounds(sources.value),
+    queryKey: ['findMany', endpoint, sources],
+    queryFn: () => findMany(endpoint, sources.value),
     staleTime: Infinity,
   });
 };
 
-export const useBackground = (slug: string) => {
-  const { fetchBackground } = useAPI();
+export const useFindOne = (endpoint: string, slug: string) => {
+  const { get } = useAPI();
   return useQuery({
-    queryKey: ['background', slug],
-    queryFn: () => fetchBackground(slug),
+    queryKey: ['get', endpoint, sources],
+    queryFn: () => get(endpoint, slug),
     staleTime: Infinity,
   });
 };

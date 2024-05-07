@@ -42,5 +42,8 @@
 </template>
 
 <script setup>
-const { data: background } = useBackground(useRoute().params.background);
+const { data: background } = useFindOne(
+  API_ENDPOINTS.backgrounds,
+  useRoute().params.background
+);
 </script>

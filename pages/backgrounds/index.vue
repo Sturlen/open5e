@@ -32,5 +32,5 @@
 
 <script setup>
 import SourceTag from '~/components/SourceTag.vue';
-const { data: backgrounds } = useBackgrounds();
+const { data: backgrounds } = useFindMany(API_ENDPOINTS.backgrounds);
 </script>
