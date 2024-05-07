@@ -113,6 +113,7 @@ function closeModal() {
 }
 function saveSelection() {
   store.value.setSources(selectedSources.value);
+  setSources(selectedSources.value); // bypass the store and set the sources directly
   closeModal();
 }
 </script>
