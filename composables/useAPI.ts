@@ -96,13 +96,13 @@ export const useSubclass = (className: string, subclass: string) => {
   });
 };
 
-export const useCombatSections = (endpoint: string) => {
+export const useSections = (category: string) => {
   const { findMany } = useAPI();
   return useQuery({
-    queryKey: ['findMany', 'combat', sources],
+    queryKey: ['findMany', category, sources],
     queryFn: async () => {
       const sections = await findMany(API_ENDPOINTS.sections, sources.value);
-      return sections.filter((section) => section.parent === 'Combat');
+      return sections.filter((section) => section.parent === category);
     },
     staleTime: Infinity,
   });

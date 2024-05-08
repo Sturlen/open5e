@@ -23,7 +23,7 @@
 </template>
 
 <script setup>
-const { data: combatSections } = useCombatSections();
+const { data: combatSections } = useSections('Combat');
 </script>
 
 <style></style>
