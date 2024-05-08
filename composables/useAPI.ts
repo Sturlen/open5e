@@ -95,3 +95,15 @@ export const useSubclass = (className: string, subclass: string) => {
     staleTime: Infinity,
   });
 };
+
+export const useCombatSections = (endpoint: string) => {
+  const { findMany } = useAPI();
+  return useQuery({
+    queryKey: ['findMany', 'combat', sources],
+    queryFn: async () => {
+      const sections = await findMany(API_ENDPOINTS.sections, sources.value);
+      return sections.filter((section) => section.parent === 'Combat');
+    },
+    staleTime: Infinity,
+  });
+};
