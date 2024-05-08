@@ -6,6 +6,8 @@ export const API_ENDPOINTS = {
   characters: 'v1/characters',
   sections: 'v1/sections',
   classes: 'v1/classes',
+  conditions: 'v1/conditions',
+  feats: 'v1/feats',
 } as const;
 
 export const useAPI = () => {
@@ -67,7 +69,7 @@ export const useFindMany = (endpoint: string) => {
 export const useFindOne = (endpoint: string, slug: string) => {
   const { get } = useAPI();
   return useQuery({
-    queryKey: ['get', endpoint],
+    queryKey: ['get', endpoint, slug],
     queryFn: () => get(endpoint, slug),
     staleTime: Infinity,
   });
