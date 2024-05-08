@@ -26,10 +26,5 @@
 </template>
 
 <script setup>
-import { useMainStore } from '~/store';
-const store = useMainStore();
-
-const charSections = computed(() => {
-  return store.allCharacterSections;
-});
+const { data: section } = useFindMany(API_ENDPOINTS.sections);
 </script>

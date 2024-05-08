@@ -16,15 +16,8 @@
 </template>
 
 <script setup>
-const classData = await useFetchArticle({
-  slug: useRoute().params.className,
-  category: 'classes',
-});
-const slug = useRoute().params.subclass;
-const subclass = classData.archetypes.find(
-  (subclass) => subclass.slug === slug
+const { data: subclass } = useSubclass(
+  useRoute().params.className,
+  useRoute().params.subclass
 );
-if (!subclass) {
-  showError({ statusCode: 404, message: `${useRoute().path} does not exist` });
-}
 </script>

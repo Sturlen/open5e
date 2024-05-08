@@ -3,6 +3,9 @@ import axios from 'axios';
 
 export const API_ENDPOINTS = {
   backgrounds: 'v1/backgrounds',
+  characters: 'v1/characters',
+  sections: 'v1/sections',
+  classes: 'v1/classes',
 } as const;
 
 export const useAPI = () => {
@@ -23,12 +26,12 @@ export const useAPI = () => {
         },
       });
 
-      return res.data.results;
+      return res.data.results as Record<string, any>[];
     },
     get: async (endpoint: string, slug: string) => {
       console.log('fetching background', slug);
       const res = await api.get(`/${endpoint}/${slug}/`);
-      return res.data;
+      return res.data as Record<string, any>;
     },
   };
 };
@@ -66,6 +69,29 @@ export const useFindOne = (endpoint: string, slug: string) => {
   return useQuery({
     queryKey: ['get', endpoint],
     queryFn: () => get(endpoint, slug),
+    staleTime: Infinity,
+  });
+};
+
+export const useSubclass = (className: string, subclass: string) => {
+  const { get } = useAPI();
+
+  return useQuery({
+    queryKey: ['get', className, subclass],
+    queryFn: async () => {
+      const _class = await get(API_ENDPOINTS.classes, className);
+      const archetype = _class.archetypes.find((a: any) => a.slug === subclass);
+      if (!archetype) {
+        showError({
+          statusCode: 404,
+          statusMessage: `Archetype ${subclass} not found for class ${className}`,
+        });
+        throw new Error(
+          `Archetype ${subclass} not found for class ${className}`
+        );
+      }
+      return archetype;
+    },
     staleTime: Infinity,
   });
 };
