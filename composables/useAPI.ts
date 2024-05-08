@@ -64,7 +64,7 @@ export const useFindMany = (endpoint: string) => {
 export const useFindOne = (endpoint: string, slug: string) => {
   const { get } = useAPI();
   return useQuery({
-    queryKey: ['get', endpoint, sources],
+    queryKey: ['get', endpoint],
     queryFn: () => get(endpoint, slug),
     staleTime: Infinity,
   });
