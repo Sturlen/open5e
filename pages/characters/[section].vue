@@ -11,6 +11,6 @@
 <script setup>
 const { data: section } = useFindOne(
   API_ENDPOINTS.sections,
-  useRoute().params.background
+  useRoute().params.section
 );
 </script>
