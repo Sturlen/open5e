@@ -7,7 +7,11 @@ export const API_ENDPOINTS = {
   sections: 'v1/sections',
   classes: 'v1/classes',
   conditions: 'v1/conditions',
+  magicitems: 'v1/magicitems',
+  monsters: 'v1/monsters',
+  races: 'v1/races',
   feats: 'v1/feats',
+  spells: 'v1/spells',
 } as const;
 
 export const useAPI = () => {
@@ -109,3 +113,37 @@ export const useSections = (category: string) => {
     staleTime: Infinity,
   });
 };
+
+export const useMonster = (slug: string) => {
+  const { get } = useAPI();
+  return useQuery({
+    queryKey: ['get', API_ENDPOINTS.monsters, slug],
+    queryFn: async () => {
+      const monster = await get(API_ENDPOINTS.monsters, slug);
+      monster.abilities = ability_names.map((ability) => ({
+        name: ability,
+        shortName: ability.slice(0, 3),
+        score: monster[ability],
+        modifier: formatMod(calcMod(monster[ability])),
+        save: monster[`${ability}_save`],
+      }));
+      console.log('monster', monster);
+      return monster;
+    },
+    staleTime: Infinity,
+  });
+};
+
+// Helper functions
+const calcMod = (score: number) => Math.floor((score - 10) / 2);
+const formatMod = (mod: number) =>
+  mod >= 0 ? '+' + mod.toString() : mod.toString();
+
+const ability_names = [
+  'strength',
+  'dexterity',
+  'constitution',
+  'intelligence',
+  'wisdom',
+  'charisma',
+] as const;

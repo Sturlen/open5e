@@ -51,6 +51,9 @@ export default defineNuxtConfig({
     'nuxt-icon',
     '@hebilicious/vue-query-nuxt',
   ],
+  queryClientOptions: {
+    defaultOptions: { queries: { staleTime: Infinity } },
+  },
   buildModules: ['@nuxtjs/pinia'],
   runtimeConfig: {
     public: {
