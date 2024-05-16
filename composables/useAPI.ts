@@ -1,5 +1,6 @@
 import { queryOptions, useQuery } from '@tanstack/vue-query';
 import axios from 'axios';
+import * as _ from 'underscore';
 
 export const API_ENDPOINTS = {
   backgrounds: 'v1/backgrounds',
@@ -134,6 +135,37 @@ export const useMonster = (slug: string) => {
   });
 };
 
+export const useSpells = (charClass: string) => {
+  const { findMany } = useAPI();
+  return useQuery({
+    queryKey: ['findMany', API_ENDPOINTS.spells, sources],
+    queryFn: async () => {
+      console.log('fetching spells', sources.value);
+      const spells = await findMany(API_ENDPOINTS.spells, sources.value);
+      const class_spells = spells
+        .filter((spell) => {
+          return spell.dnd_class.toLowerCase().includes(charClass);
+        })
+        .sort(function (a, b) {
+          return a.lvl - b.lvl;
+        });
+
+      const grouped_spells = _.groupBy(class_spells, 'level_int');
+
+      // label groups by level
+      const levels = Object.getOwnPropertyNames(grouped_spells).map((key) => {
+        return {
+          lvl: key,
+          lvlText: available_levels[parseInt(key)],
+          spells: grouped_spells[key],
+        };
+      });
+
+      return levels;
+    },
+    staleTime: Infinity,
+  });
+};
 // Helper functions
 const calcMod = (score: number) => Math.floor((score - 10) / 2);
 const formatMod = (mod: number) =>
@@ -147,3 +179,27 @@ const ability_names = [
   'wisdom',
   'charisma',
 ] as const;
+
+const available_classes = ref([
+  'bard',
+  'cleric',
+  'sorcerer',
+  'wizard',
+  'druid',
+  'paladin',
+  'warlock',
+  'ranger',
+]);
+
+const available_levels = [
+  'Cantrip',
+  '1st-level',
+  '2nd-level',
+  '3rd-level',
+  '4th-level',
+  '5th-level',
+  '6th-level',
+  '7th-level',
+  '8th-level',
+  '9th-level',
+];
