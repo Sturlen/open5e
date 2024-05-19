@@ -60,7 +60,7 @@
         </thead>
         <tbody>
           <!-- TODO: FIX SORTING -->
-          <tr v-for="monster in filtered_monsters" :key="monster.slug">
+          <tr v-for="monster in sorted_monsters" :key="monster.slug">
             <th>
               <nuxt-link
                 tag="a"
@@ -99,18 +99,6 @@ import FractionRenderer from '~/components/FractionRenderer.vue';
 import SourceTag from '~/components/SourceTag.vue';
 import SortableTableHeader from '~/components/SortableTableHeader.vue';
 import MonsterFilterBox from '~/components/MonsterFilterBox.vue';
-import { useMainStore } from '~/store';
-
-function challengeConversion(cr) {
-  if (cr.includes('/')) {
-    let crFraction = cr.split('/');
-    return crFraction[0] / crFraction[1];
-  } else {
-    return parseInt(cr);
-  }
-}
-
-const store = useMainStore();
 
 const currentSortDir = ref('ascending');
 const currentSortProperty = ref('name');
@@ -128,131 +116,13 @@ const { data: monsters } = useMonsters(filters);
 const filtered_monsters = computed(() => {
   return monsters.value ? filterMonsters(monsters.value, filters.value) : [];
 });
-
-function filterByChallengeHigh(monsters, challengeRating) {
-  if (challengeRating !== null) {
-    // DURING THE FILTER WE CONVERT ANY STRINGS INTO NUMBERS SO WE CAN COMPARE
-    return monsters.filter((monster) => {
-      if (
-        challengeConversion(monster.challenge_rating) <=
-        challengeConversion(challengeRating)
-      ) {
-        return monster;
-      }
-    });
-  } else {
-    return monsters;
-  }
-}
-
-function filteredMonsters() {
-  let filteredByName = filterByName(store.allMonsters, filters.name);
-  let filteredByChallengeHigh = filterByChallengeHigh(
-    filteredByName,
-    filters.challengeHigh
+const sorted_monsters = computed(() => {
+  return sortMonsters(
+    filtered_monsters.value,
+    currentSortProperty.value,
+    currentSortDir.value
   );
-  let filteredByChallengeLow = filterByChallengeLow(
-    filteredByChallengeHigh,
-    filters.challengeLow
-  );
-  let filteredByHpHigh = filterByHpHigh(filteredByChallengeLow, filters.hpHigh);
-  let filteredByHpLow = filterByHpLow(filteredByHpHigh, filters.hpLow);
-  let filteredBySize = filterBySize(filteredByHpLow, filters.size);
-  let filteredByType = filterByType(filteredBySize, filters.type);
-  return filteredByType;
-}
-
-const sortedMonsters = computed(() => {
-  return [...filteredMonsters()].sort((a, b) => {
-    let modifier = 1;
-    if (currentSortDir.value === 'descending') {
-      modifier = -1;
-    }
-    if (a[currentSortProperty.value] < b[currentSortProperty.value]) {
-      return -1 * modifier;
-    }
-    if (a[currentSortProperty.value] > b[currentSortProperty.value]) {
-      return 1 * modifier;
-    }
-    return 0;
-  });
 });
-
-function filterByChallengeLow(monsters, challengeRating) {
-  if (challengeRating !== null) {
-    // DURING THE FILTER WE CONVERT ANY STRINGS INTO NUMBERS SO WE CAN COMPARE
-    return monsters.filter((monster) => {
-      if (
-        challengeConversion(monster.challenge_rating) >=
-        challengeConversion(challengeRating)
-      ) {
-        return monster;
-      }
-    });
-  } else {
-    return monsters;
-  }
-}
-
-function filterByHpHigh(monsters, hp) {
-  if (hp !== null) {
-    return monsters.filter((monster) => {
-      if (monster.hit_points <= hp) {
-        return monster;
-      }
-    });
-  } else {
-    return monsters;
-  }
-}
-
-function filterByHpLow(monsters, hp) {
-  if (hp !== null) {
-    return monsters.filter((monster) => {
-      if (monster.hit_points >= hp) {
-        return monster;
-      }
-    });
-  } else {
-    return monsters;
-  }
-}
-
-function filterByName(monsters, nameFilter) {
-  if (nameFilter !== null) {
-    return monsters.filter((monster) => {
-      if (monster.name.toLowerCase().includes(nameFilter.toLowerCase())) {
-        return monster;
-      }
-    });
-  } else {
-    return monsters;
-  }
-}
-
-function filterBySize(monsters, size) {
-  if (size !== null) {
-    return monsters.filter((monster) => {
-      if (monster.size === size) {
-        return monster;
-      }
-    });
-  } else {
-    return monsters;
-  }
-}
-
-function filterByType(monsters, type) {
-  if (type !== null) {
-    return monsters.filter((monster) => {
-      if (monster.type === type) {
-        return monster;
-      }
-    });
-  } else {
-    return monsters;
-  }
-}
 
 const ariaSort = computed(() => {
   return {

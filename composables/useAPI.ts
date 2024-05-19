@@ -274,6 +274,24 @@ function inRange(value: number, low: number, high: number) {
   return low <= value && value <= high;
 }
 
+export function sortMonsters(
+  monsters: Record<string, any>[],
+  sortByField: string,
+  direction: 'ascending' | 'descending' = 'ascending'
+) {
+  const isAscending = direction === 'ascending';
+  console.log('sorting monsters', sortByField, direction);
+  return [...monsters].sort((a, b) => {
+    if (a[sortByField] < b[sortByField]) {
+      return isAscending ? -1 : 1;
+    }
+    if (a[sortByField] > b[sortByField]) {
+      return isAscending ? 1 : -1;
+    }
+    return 0;
+  });
+}
+
 export const MONSTER_CHALLENGE_RATINGS_LIST = [
   '0',
   '1/8',
