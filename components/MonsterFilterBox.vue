@@ -20,7 +20,7 @@
           name="challengeRtgLow"
           class="w-1/2 rounded-md ring-1 ring-blood focus:ring-2 focus:ring-blood"
         >
-          <option :key="null" :value="null" text="Select rating"></option>
+          <option :key="null" :value="null" text="Any"></option>
           <option
             v-for="[label, value] in MONSTER_CHALLENGE_RATINGS_MAP"
             :key="value"
@@ -37,7 +37,7 @@
           name="challengeRtgHigh"
           class="w-1/2 rounded-md ring-1 ring-blood focus:ring-2 focus:ring-blood"
         >
-          <option :key="null" :value="null" text="Select rating"></option>
+          <option :key="null" :value="null" text="Any"></option>
           <option
             v-for="[label, value] in MONSTER_CHALLENGE_RATINGS_MAP"
             :key="value"
@@ -84,6 +84,7 @@
         name="size"
         class="w-1/2 rounded-md ring-1 ring-blood focus:ring-2 focus:ring-blood"
       >
+        <option :key="null" :value="null" text="Any"></option>
         <option
           v-for="size in MONSTER_SIZES_LIST"
           :key="size"
@@ -100,6 +101,7 @@
           name="type"
           class="w-full rounded-md ring-1 ring-blood focus:ring-2 focus:ring-blood"
         >
+          <option :key="null" :value="null" text="Any"></option>
           <option
             v-for="monsterType in MONSTER_TYPES_LIST"
             :key="monsterType"

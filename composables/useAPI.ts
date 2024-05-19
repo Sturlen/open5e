@@ -254,10 +254,19 @@ export const filterMonsters = (
 
   return _mons
     .filter((monster) =>
-      name ? monster.name.toLowerCase().includes(name) : true
+      name ? monster.name.toLowerCase().includes(name.toLowerCase()) : true
     )
     .filter((monster) =>
       inRange(monster.cr, challengeLow ?? 0, challengeHigh ?? Infinity)
+    )
+    .filter((monster) =>
+      inRange(monster.hit_points, hpLow ?? 0, hpHigh ?? Infinity)
+    )
+    .filter((monster) =>
+      size ? monster.size.toLowerCase().includes(size.toLowerCase()) : true
+    )
+    .filter((monster) =>
+      type ? monster.type.toLowerCase().includes(type.toLowerCase()) : true
     );
 };
 
