@@ -2,7 +2,9 @@
   <!-- FILTER BOX -->
   <div class="filter-header-wrapper flex flex-wrap bg-smoke px-2">
     <div class="bg-blue flex w-full flex-wrap align-middle">
-      <label for="hpLow" class="pt-1 font-bold md:w-1/6">MONSTER NAME:</label>
+      <label for="monsterName" class="pt-1 font-bold md:w-1/6"
+        >MONSTER NAME:</label
+      >
       <input
         id="monsterName"
         v-model="filters.name"
@@ -18,11 +20,12 @@
           name="challengeRtgLow"
           class="w-1/2 rounded-md ring-1 ring-blood focus:ring-2 focus:ring-blood"
         >
+          <option :key="null" :value="null" text="Select rating"></option>
           <option
-            v-for="rtg in MONSTER_CHALLENGE_RATINGS_LIST"
-            :key="rtg"
-            class=""
-            v-text="rtg"
+            v-for="[label, value] in MONSTER_CHALLENGE_RATINGS_MAP"
+            :key="value"
+            :value="value"
+            v-text="label"
           ></option>
         </select>
       </div>
@@ -34,10 +37,12 @@
           name="challengeRtgHigh"
           class="w-1/2 rounded-md ring-1 ring-blood focus:ring-2 focus:ring-blood"
         >
+          <option :key="null" :value="null" text="Select rating"></option>
           <option
-            v-for="rtg in MONSTER_CHALLENGE_RATINGS_LIST"
-            :key="rtg"
-            v-text="rtg"
+            v-for="[label, value] in MONSTER_CHALLENGE_RATINGS_MAP"
+            :key="value"
+            :value="value"
+            v-text="label"
           ></option>
         </select>
       </div>
@@ -49,6 +54,10 @@
         <input
           id="hpLow"
           v-model="filters.hpLow"
+          type="number"
+          min="0"
+          max="9999"
+          step="1"
           name="hpLow"
           class="w-1/2 rounded-md px-2 ring-1 ring-blood focus:ring-2 focus:ring-blood"
         />
@@ -58,17 +67,21 @@
         <input
           id="hpHigh"
           v-model="filters.hpHigh"
+          type="number"
+          min="0"
+          max="9999"
+          step="1"
           name="hpHigh"
           class="w-1/2 rounded-md px-2 ring-1 ring-blood focus:ring-2 focus:ring-blood"
         />
       </div>
     </div>
     <div class="flex w-full flex-wrap pr-1 pt-4 md:w-1/2">
-      <label for="hpLow" class="w-1/2 font-bold">SIZE:</label>
+      <label for="size" class="w-1/2 font-bold">SIZE:</label>
       <select
-        id="hpLow"
+        id="size"
         v-model="filters.size"
-        name="hpLow"
+        name="size"
         class="w-1/2 rounded-md ring-1 ring-blood focus:ring-2 focus:ring-blood"
       >
         <option
@@ -80,11 +93,11 @@
     </div>
     <div class="flex w-full flex-wrap pt-4 md:w-1/2">
       <div class="flex w-full px-1">
-        <label for="hpLow" class="w-full font-bold">TYPE:</label>
+        <label for="type" class="w-full font-bold">TYPE:</label>
         <select
-          id="hpLow"
+          id="type"
           v-model="filters.type"
-          name="hpLow"
+          name="type"
           class="w-full rounded-md ring-1 ring-blood focus:ring-2 focus:ring-blood"
         >
           <option
