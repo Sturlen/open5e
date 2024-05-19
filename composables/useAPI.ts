@@ -35,9 +35,10 @@ export const useAPI = () => {
 
       return res.data.results as Record<string, any>[];
     },
-    get: async (endpoint: string, slug: string) => {
-      console.log('fetching background', slug);
-      const res = await api.get(`/${endpoint}/${slug}/`);
+    get: async (...parts: string[]) => {
+      const route = '/' + parts.join('/');
+      console.log('fetching', route);
+      const res = await api.get(route);
       return res.data as Record<string, any>;
     },
   };
@@ -202,4 +203,116 @@ const available_levels = [
   '7th-level',
   '8th-level',
   '9th-level',
+];
+
+// TODO: make get into UseArticle, and use for all one page article routes.
+
+export type MonsterFilter = {
+  name?: string;
+  challengeLow?: number;
+  challengeHigh?: number;
+  hpLow?: number;
+  hpHigh?: number;
+  size?: string;
+  type?: string;
+};
+
+const EMPTY_FILTER = {};
+
+export const monster_filters = ref<MonsterFilter>(EMPTY_FILTER);
+
+export function clearMonsterFilters() {
+  monster_filters.value = EMPTY_FILTER;
+}
+
+export const useMonsters = (
+  filter: globalThis.Ref<MonsterFilter> = ref({})
+) => {
+  const { findMany } = useAPI();
+  return useQuery({
+    queryKey: ['monsters', API_ENDPOINTS.monsters, sources],
+    queryFn: async () => {
+      console.log('fetching monsters', sources.value);
+      const monsters = await findMany(API_ENDPOINTS.monsters, sources.value);
+
+      return monsters;
+    },
+    staleTime: Infinity,
+  });
+};
+
+export const filterMonsters = (
+  monsters: Record<string, any>[],
+  filter: MonsterFilter
+) => {
+  const _mons = monsters;
+  const { challengeHigh, challengeLow, hpHigh, hpLow, name, size, type } =
+    filter;
+
+  return _mons.filter((monster) =>
+    name ? monster.name.toLowerCase().includes(name) : true
+  );
+};
+
+export const MONSTER_CHALLENGE_RATINGS_LIST = [
+  '0',
+  '1/8',
+  '1/4',
+  '1/2',
+  '1',
+  '2',
+  '3',
+  '4',
+  '5',
+  '6',
+  '7',
+  '8',
+  '9',
+  '10',
+  '11',
+  '12',
+  '13',
+  '14',
+  '15',
+  '16',
+  '17',
+  '18',
+  '19',
+  '20',
+  '21',
+  '22',
+  '23',
+  '24',
+  '25',
+  '26',
+  '27',
+  '28',
+  '29',
+  '30',
+];
+
+export const MONSTER_SIZES_LIST = [
+  'Tiny',
+  'Small',
+  'Medium',
+  'Large',
+  'Huge',
+  'Gargantuan',
+];
+
+export const MONSTER_TYPES_LIST = [
+  'Aberration',
+  'Beast',
+  'Celestial',
+  'Construct',
+  'Dragon',
+  'Elemental',
+  'Fey',
+  'Fiend',
+  'Giant',
+  'Humanoid',
+  'Monstrosity',
+  'Ooze',
+  'Plant',
+  'Undead',
 ];
