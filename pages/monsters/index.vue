@@ -117,7 +117,7 @@ const filtered_monsters = computed(() => {
   return monsters.value ? filterMonsters(monsters.value, filters.value) : [];
 });
 const sorted_monsters = computed(() => {
-  return sortMonsters(
+  return sortByField(
     filtered_monsters.value,
     currentSortProperty.value,
     currentSortDir.value

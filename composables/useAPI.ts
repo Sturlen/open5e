@@ -168,6 +168,20 @@ export const useSpells = (charClass: string) => {
     staleTime: Infinity,
   });
 };
+
+export const useAllSpells = () => {
+  const { findMany } = useAPI();
+  return useQuery({
+    queryKey: ['allSpells', API_ENDPOINTS.spells, sources],
+    queryFn: async () => {
+      console.log('fetching all spells', sources.value);
+      const spells = await findMany(API_ENDPOINTS.spells, sources.value);
+      return spells;
+    },
+    staleTime: Infinity,
+  });
+};
+
 // Helper functions
 const calcMod = (score: number) => Math.floor((score - 10) / 2);
 const formatMod = (mod: number) =>
@@ -274,18 +288,20 @@ function inRange(value: number, low: number, high: number) {
   return low <= value && value <= high;
 }
 
-export function sortMonsters(
-  monsters: Record<string, any>[],
-  sortByField: string,
+/**
+ * Returns a new array of items sorted by the given field
+ */
+export function sortByField(
+  items: Record<string, any>[],
+  field: string,
   direction: 'ascending' | 'descending' = 'ascending'
 ) {
   const isAscending = direction === 'ascending';
-  console.log('sorting monsters', sortByField, direction);
-  return [...monsters].sort((a, b) => {
-    if (a[sortByField] < b[sortByField]) {
+  return [...items].sort((a, b) => {
+    if (a[field] < b[field]) {
       return isAscending ? -1 : 1;
     }
-    if (a[sortByField] > b[sortByField]) {
+    if (a[field] > b[field]) {
       return isAscending ? 1 : -1;
     }
     return 0;
