@@ -22,8 +22,8 @@
           class="cursor-pointer bg-red-600 px-4 py-2 hover:bg-red-400 dark:bg-red-700 dark:hover:bg-red-600"
           @click="showModal = true"
         >
-          <span v-if="documents.length">
-            {{ sourceSelection.length }} of {{ documents.length }} sources
+          <span v-if="documents">
+            {{ no_selected_sources }} of {{ no_avilable_sources }} sources
             <Icon
               name="heroicons:pencil-square"
               class="h-5 w-5 text-white"
@@ -189,8 +189,10 @@ watch($route, () => {
 
 const showModal = ref(false);
 
-const documents = computed(() => main_store.documents);
-const sourceSelection = computed(() => main_store.sourceSelection);
+const no_selected_sources = computed(() => sources.value.length);
+const { data: documents } = useDocuments();
+const no_avilable_sources = computed(() => documents.value?.length ?? 0);
+
 const isLoadingData = computed(() => main_store.isLoadingData);
 
 const routes = computed(() => [
