@@ -105,16 +105,12 @@ export const useSubclass = (className: string, subclass: string) => {
   });
 };
 
-export const useSections = (category: string) => {
-  const { findMany } = useAPI();
-  return useQuery({
-    queryKey: ['findMany', category, sources],
-    queryFn: async () => {
-      const sections = await findMany(API_ENDPOINTS.sections, sources.value);
-      return sections.filter((section) => section.parent === category);
-    },
-    staleTime: Infinity,
-  });
+export const useSections = (...categories: string[]) => {
+  const { data: sections, isPending } = useFindMany(API_ENDPOINTS.sections);
+  const filtered_sections = computed(() =>
+    sections.value?.filter((section) => categories.includes(section.parent))
+  );
+  return { data: filtered_sections, isPending };
 };
 
 export const useMonster = (slug: string) => {

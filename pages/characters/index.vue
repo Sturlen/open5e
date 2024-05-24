@@ -24,15 +24,5 @@
 </template>
 
 <script setup>
-const { data: sections1 } = useSections('Characters');
-const { data: sections2 } = useSections('Character Advancement');
-const sections = computed(() => {
-  if (sections1.value || sections2.value)
-    return sections1.value
-      .concat(sections2.value)
-      .sort((a, b) => a.name.localeCompare(b.name));
-  else {
-    return undefined;
-  }
-});
+const { data: sections } = useSections('Characters', 'Character Advancement');
 </script>

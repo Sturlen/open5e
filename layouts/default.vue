@@ -195,17 +195,11 @@ const { data: equipment_sections } = useSections('Equipment');
 const { data: gameplay_sections } = useSections('Gameplay Mechanics');
 const { data: rules_sections } = useSections('Rules');
 
-const { data: sections1 } = useSections('Characters');
-const { data: sections2 } = useSections('Character Advancement');
-const character_sections = computed(() => {
-  if (sections1.value || sections2.value)
-    return sections1.value
-      .concat(sections2.value)
-      .sort((a, b) => a.name.localeCompare(b.name));
-  else {
-    return [];
-  }
-});
+const { data: character_sections } = useSections(
+  'Characters',
+  'Character Advancement'
+);
+
 const no_avilable_sources = computed(() => documents.value?.length ?? 0);
 
 const isLoadingData = useIsFetching();
