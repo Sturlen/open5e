@@ -1,18 +1,18 @@
 import { queryOptions, useQuery } from '@tanstack/vue-query';
 import axios from 'axios';
-import { parse } from 'path';
 import * as _ from 'underscore';
 
 export const API_ENDPOINTS = {
   backgrounds: 'v1/backgrounds',
   characters: 'v1/characters',
-  sections: 'v1/sections',
   classes: 'v1/classes',
   conditions: 'v1/conditions',
+  documents: 'v1/documents',
+  feats: 'v1/feats',
   magicitems: 'v1/magicitems',
   monsters: 'v1/monsters',
   races: 'v1/races',
-  feats: 'v1/feats',
+  sections: 'v1/sections',
   spells: 'v1/spells',
 } as const;
 
@@ -485,3 +485,11 @@ export const MAGIC_ITEMS_TYPES = [
   'Weapon',
   'Wondrous Item',
 ] as const;
+
+export const useDocuments = () => {
+  const { findMany } = useAPI();
+  return useQuery({
+    queryKey: ['findMany', API_ENDPOINTS.documents],
+    queryFn: () => findMany(API_ENDPOINTS.documents, []),
+  });
+};
