@@ -408,9 +408,16 @@ export const MONSTER_TYPES_LIST = [
   'Undead',
 ] as const;
 
-export const useMagicItems = () => {
+export type MagicItemsFilter = {
+  name?: string;
+  rarity?: string;
+  type?: string;
+  isAttunementRequired?: boolean;
+};
+
+export const useMagicItems = (filters: MagicItemsFilter = {}) => {
   const { findMany } = useAPI();
-  return useQuery({
+  const { data } = useQuery({
     queryKey: ['findMany', API_ENDPOINTS.magicitems, sources],
     queryFn: async () => {
       console.log('fetching magic items', sources.value);
@@ -421,6 +428,42 @@ export const useMagicItems = () => {
       return magicItems;
     },
   });
+
+  const filtered_items = computed(() => {
+    const items = data.value ?? [];
+    console.log('filtering items', filters);
+
+    return items
+      .filter((item) => {
+        return item.name
+          .toLowerCase()
+          .includes(filters.name?.toLowerCase() ?? '');
+      })
+      .filter((item) => {
+        return item.rarity
+          .toLowerCase()
+          .includes(filters.rarity?.toLowerCase() ?? '');
+      })
+      .filter((item) =>
+        filters.type
+          ? item.type.toLowerCase() === filters.type.toLowerCase()
+          : true
+      )
+      .filter((item) =>
+        filters.rarity
+          ? item.rarity.toLowerCase() === filters.rarity.toLowerCase()
+          : true
+      )
+      .filter((item) =>
+        filters.isAttunementRequired != null
+          ? (filters.isAttunementRequired &&
+              item.requires_attunement === 'requires attunement') ||
+            item.requires_attunement === ''
+          : true
+      );
+  });
+
+  return { data: filtered_items };
 };
 
 export const MAGIC_ITEMS_RARITES = [
