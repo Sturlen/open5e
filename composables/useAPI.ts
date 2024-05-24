@@ -389,7 +389,7 @@ export const MONSTER_SIZES_LIST = [
   'Large',
   'Huge',
   'Gargantuan',
-];
+] as const;
 
 export const MONSTER_TYPES_LIST = [
   'Aberration',
@@ -406,4 +406,39 @@ export const MONSTER_TYPES_LIST = [
   'Ooze',
   'Plant',
   'Undead',
-];
+] as const;
+
+export const useMagicItems = () => {
+  const { findMany } = useAPI();
+  return useQuery({
+    queryKey: ['findMany', API_ENDPOINTS.magicitems, sources],
+    queryFn: async () => {
+      console.log('fetching magic items', sources.value);
+      const magicItems = await findMany(
+        API_ENDPOINTS.magicitems,
+        sources.value
+      );
+      return magicItems;
+    },
+  });
+};
+
+export const MAGIC_ITEMS_RARITES = [
+  'Common',
+  'Uncommon',
+  'Rare',
+  'Very Rare',
+  'Legendary',
+] as const;
+
+export const MAGIC_ITEMS_TYPES = [
+  'Armor',
+  'Potion',
+  'Ring',
+  'Rod',
+  'Scroll',
+  'Staff',
+  'Wand',
+  'Weapon',
+  'Wondrous Item',
+] as const;

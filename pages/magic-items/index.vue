@@ -4,89 +4,19 @@
       <h1 class="filter-header">Magic Item List</h1>
       <FilterButton @showFilters="displayFilters = !displayFilters" />
     </div>
-    <!-- FILTER -->
-    <div
-      v-if="displayFilters"
-      class="filter-header-wrapper flex flex-wrap bg-smoke px-2"
-    >
-      <div class="bg-blue flex w-full flex-wrap align-middle">
-        <label for="hpLow" class="w-full pt-1 font-bold md:w-1/6"
-          >ITEM NAME:</label
-        >
-        <input
-          id="itemName"
-          v-model="filters.name"
-          name="itemName"
-          class="mt-2 w-full rounded-md px-2 ring-1 ring-blood focus:ring-2 focus:ring-blood md:w-5/6"
-        />
-        <div class="flex w-full flex-wrap">
-          <div class="mt-2 flex w-full flex-wrap md:w-1/2">
-            <span class="mr-2 w-full font-bold">RARITY:</span>
-            <select
-              id="rarity"
-              v-model="filters.rarity"
-              name="rarity"
-              class="flex w-full rounded-md ring-1 ring-blood focus:ring-2 focus:ring-blood"
-            >
-              <option
-                v-for="rtg in itemRarities"
-                :key="rtg"
-                class=""
-                v-text="rtg"
-              ></option>
-            </select>
-          </div>
-          <div class="mt-2 flex w-full flex-wrap md:w-1/2">
-            <span class="mr-2 w-full font-bold md:ml-2">TYPE:</span>
-            <select
-              id="type"
-              v-model="filters.type"
-              name="type"
-              class="flex w-full rounded-md ring-1 ring-blood focus:ring-2 focus:ring-blood md:ml-2"
-            >
-              <option
-                v-for="rtg in itemTypes"
-                :key="rtg"
-                class=""
-                v-text="rtg"
-              ></option>
-            </select>
-          </div>
-          <div class="mt-4 flex w-full md:w-1/2">
-            <span class="mr-2 font-bold">REQUIRES ATTUNEMENT:</span>
-            <input
-              id="attunement"
-              v-model="filters.attunement"
-              type="checkbox"
-              name="attunement"
-              class="mb-1 accent-blood"
-            />
-          </div>
-          <div class="mt-4 flex w-full justify-end md:w-1/2">
-            <button
-              class="rounded-md bg-fog p-1 text-blood outline outline-1 outline-blood hover:bg-blood hover:text-fog"
-              @click="clearFilters()"
-            >
-              <Icon name="heroicons:x-mark" class="mb-1 mr-1" />
-              Clear Filters
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- END FILTER -->
+    <MagicItemFilterBox v-model="magic_items_filters" v-if="displayFilters" />
     <div class="flex w-full italic text-blood">
       Displaying {{ filteredItems.length }} magic items
     </div>
     <hr class="color-blood mx-auto" />
-    <div class="three-column">
+    <div class="three-column" v-if="magic_items">
       <p v-if="!items.length">Loading...</p>
       <div v-else aria-live="assertive" aria-atomic="true">
         <p v-if="!itemListLength">No results</p>
       </div>
       <div>
         <div
-          v-for="(letter, key) in itemsByLetter"
+          v-for="(letter, key) in magic_items_by_letter"
           :key="letter[0].name.charAt(0)"
           class="letter-list"
         >
@@ -128,6 +58,12 @@ const filters = reactive({
   name: null,
   rarity: null,
   type: null,
+});
+const magic_items_filters = ref({
+  name: null,
+  rarity: null,
+  type: null,
+  isAttunementRequired: null,
 });
 const itemRarities = ['Common', 'Uncommon', 'Rare', 'Very Rare', 'Legendary'];
 const itemTypes = [
@@ -212,8 +148,17 @@ const itemListLength = computed(() => {
   return Object.keys(itemsByLetter.value).length;
 });
 
-onMounted(() => {
-  store.loadMagicItems();
+const { data: magic_items } = useMagicItems();
+
+const magic_items_by_letter = computed(() => {
+  return (magic_items.value ?? []).reduce((acc, item) => {
+    const firstLetter = item.name.charAt(0).toLowerCase();
+    if (!acc[firstLetter]) {
+      acc[firstLetter] = [];
+    }
+    acc[firstLetter].push(item);
+    return acc;
+  }, {});
 });
 </script>
 
