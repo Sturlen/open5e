@@ -1,6 +1,27 @@
-import { queryOptions, useQuery } from '@tanstack/vue-query';
+import { useQuery } from '@tanstack/vue-query';
 import axios from 'axios';
-import * as _ from 'underscore';
+
+// TODO: remove underscore and use groupBy custom function
+// TODO: remove console logs
+// TODO: remove unused imports
+// TODO: remove debug json on monsters
+
+/**
+ * Groups an array of objects by a key.
+ */
+export function groupBy<T extends Record<string, any>>(
+  array: T[],
+  key: keyof T
+): Record<string, T[]> {
+  return array.reduce((result: Record<string, T[]>, item: T) => {
+    const keyValue = item[key];
+    if (!result[keyValue]) {
+      result[keyValue] = [];
+    }
+    result[keyValue].push(item);
+    return result;
+  }, {});
+}
 
 export const API_ENDPOINTS = {
   backgrounds: 'v1/backgrounds',
@@ -12,6 +33,7 @@ export const API_ENDPOINTS = {
   magicitems: 'v1/magicitems',
   monsters: 'v1/monsters',
   races: 'v1/races',
+  search: 'v2/search',
   sections: 'v1/sections',
   spells: 'v1/spells',
 } as const;
@@ -25,12 +47,17 @@ export const useAPI = () => {
   });
 
   return {
-    findMany: async (endpoint: string, sources: string[]) => {
+    findMany: async (
+      endpoint: string,
+      sources: string[],
+      params: Record<string, any> = {}
+    ) => {
       console.log('fetching backgrounds', sources);
       const res = await api.get(endpoint, {
         params: {
           limit: 5000,
           document__slug__in: sources.join(','),
+          ...params,
         },
       });
 
@@ -148,7 +175,7 @@ export const useSpells = (charClass: string) => {
           return a.lvl - b.lvl;
         });
 
-      const grouped_spells = _.groupBy(class_spells, 'level_int');
+      const grouped_spells = groupBy(class_spells, 'level_int');
 
       // label groups by level
       const levels = Object.getOwnPropertyNames(grouped_spells).map((key) => {
@@ -489,3 +516,20 @@ export const useDocuments = () => {
     queryFn: () => findMany(API_ENDPOINTS.documents, []),
   });
 };
+
+export const useSearch = (queryRef: Ref<string>) => {
+  const { findMany } = useAPI();
+  return useQuery({
+    queryKey: ['search', queryRef],
+    queryFn: () =>
+      queryRef.value
+        ? findMany(`${API_ENDPOINTS.search}`, [], {
+            schema: 'v1',
+            query: queryRef.value,
+          })
+        : [],
+  });
+};
+
+export const useQueryParam = (paramName: string) =>
+  computed(() => useRoute().query[paramName]);
