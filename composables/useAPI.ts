@@ -52,7 +52,6 @@ export const useAPI = () => {
       sources: string[],
       params: Record<string, any> = {}
     ) => {
-      console.log('fetching backgrounds', sources);
       const res = await api.get(endpoint, {
         params: {
           limit: 5000,
@@ -65,7 +64,6 @@ export const useAPI = () => {
     },
     get: async (...parts: string[]) => {
       const route = '/' + parts.join('/');
-      console.log('fetching', route);
       const res = await api.get(route);
       return res.data as Record<string, any>;
     },
@@ -86,10 +84,6 @@ const _sources = ref<string[]>(loadSourcesFromLocalStorage());
 /** a */
 export const setSources = (sources: string[]) => (_sources.value = sources);
 export const sources = computed(() => _sources.value);
-
-watch(sources, (sources) => {
-  console.log('sources changed', sources);
-});
 
 export const useFindMany = (endpoint: string) => {
   const { findMany } = useAPI();
@@ -153,10 +147,8 @@ export const useMonster = (slug: string) => {
         modifier: formatMod(calcMod(monster[ability])),
         save: monster[`${ability}_save`],
       }));
-      console.log('monster', monster);
       return monster;
     },
-    staleTime: Infinity,
   });
 };
 
@@ -165,7 +157,6 @@ export const useSpells = (charClass: string) => {
   return useQuery({
     queryKey: ['findMany', API_ENDPOINTS.spells, sources],
     queryFn: async () => {
-      console.log('fetching spells', sources.value);
       const spells = await findMany(API_ENDPOINTS.spells, sources.value);
       const class_spells = spells
         .filter((spell) => {
@@ -188,7 +179,6 @@ export const useSpells = (charClass: string) => {
 
       return levels;
     },
-    staleTime: Infinity,
   });
 };
 
@@ -197,11 +187,9 @@ export const useAllSpells = () => {
   return useQuery({
     queryKey: ['allSpells', API_ENDPOINTS.spells, sources],
     queryFn: async () => {
-      console.log('fetching all spells', sources.value);
       const spells = await findMany(API_ENDPOINTS.spells, sources.value);
       return spells;
     },
-    staleTime: Infinity,
   });
 };
 
@@ -270,12 +258,10 @@ export const useMonsters = (
   return useQuery({
     queryKey: ['monsters', API_ENDPOINTS.monsters, sources],
     queryFn: async () => {
-      console.log('fetching monsters', sources.value);
       const monsters = await findMany(API_ENDPOINTS.monsters, sources.value);
 
       return monsters;
     },
-    staleTime: Infinity,
   });
 };
 
@@ -286,8 +272,6 @@ export const filterMonsters = (
   const _mons = monsters;
   const { challengeHigh, challengeLow, hpHigh, hpLow, name, size, type } =
     filter;
-
-  console.log(challengeLow ?? 0, challengeHigh ?? Infinity);
 
   return _mons
     .filter((monster) =>
@@ -443,7 +427,6 @@ export const useMagicItems = (filters: MagicItemsFilter = {}) => {
   const { data } = useQuery({
     queryKey: ['findMany', API_ENDPOINTS.magicitems, sources],
     queryFn: async () => {
-      console.log('fetching magic items', sources.value);
       const magicItems = await findMany(
         API_ENDPOINTS.magicitems,
         sources.value
@@ -454,7 +437,6 @@ export const useMagicItems = (filters: MagicItemsFilter = {}) => {
 
   const filtered_items = computed(() => {
     const items = data.value ?? [];
-    console.log('filtering items', filters);
 
     return items
       .filter((item) => {

@@ -21,9 +21,6 @@
           <span v-if="monsters && monsters.length === 0">No results.</span>
         </div>
       </div>
-      <div>
-        <p>{{ JSON.stringify(filters) }}</p>
-      </div>
       <!-- <span style="display:block">Sorting by sort={{ currentSortProperty }}, dir={{ currentSortDir }}</span> -->
       <table v-if="monsters && monsters.length > 0" class="filterable-table">
         <caption class="sr-only">
