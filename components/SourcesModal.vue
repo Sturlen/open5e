@@ -66,6 +66,7 @@
 
 <script setup>
 import SourceTag from '~/components/SourceTag.vue';
+const { sources, setSources } = useSourcesList();
 
 const emit = defineEmits(['close']);
 

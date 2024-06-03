@@ -1,27 +1,11 @@
 import { useQuery } from '@tanstack/vue-query';
 import axios from 'axios';
+import { groupBy } from '~/functions/groupBy';
 
 // TODO: remove underscore and use groupBy custom function
 // TODO: remove console logs
 // TODO: remove unused imports
 // TODO: remove debug json on monsters
-
-/**
- * Groups an array of objects by a key.
- */
-export function groupBy<T extends Record<string, any>>(
-  array: T[],
-  key: keyof T
-): Record<string, T[]> {
-  return array.reduce((result: Record<string, T[]>, item: T) => {
-    const keyValue = item[key];
-    if (!result[keyValue]) {
-      result[keyValue] = [];
-    }
-    result[keyValue].push(item);
-    return result;
-  }, {});
-}
 
 export const API_ENDPOINTS = {
   backgrounds: 'v1/backgrounds',
@@ -38,6 +22,7 @@ export const API_ENDPOINTS = {
   spells: 'v1/spells',
 } as const;
 
+/** Provides the base functions to easily fetch data from the Open5e API. */
 export const useAPI = () => {
   const API_URL = useRuntimeConfig().public.apiUrl;
 
@@ -70,23 +55,9 @@ export const useAPI = () => {
   };
 };
 
-function loadSourcesFromLocalStorage() {
-  if (process.client) {
-    const savedSources = localStorage.getItem('sources');
-    return savedSources ? JSON.parse(savedSources) : [];
-  } else {
-    // Skip on server
-    return [];
-  }
-}
-
-const _sources = ref<string[]>(loadSourcesFromLocalStorage());
-/** a */
-export const setSources = (sources: string[]) => (_sources.value = sources);
-export const sources = computed(() => _sources.value);
-
 export const useFindMany = (endpoint: string) => {
   const { findMany } = useAPI();
+  const { sources } = useSourcesList();
   return useQuery({
     queryKey: ['findMany', endpoint, sources],
     queryFn: () => findMany(endpoint, sources.value),
@@ -154,6 +125,7 @@ export const useMonster = (slug: string) => {
 
 export const useSpells = (charClass: string) => {
   const { findMany } = useAPI();
+  const { sources } = useSourcesList();
   return useQuery({
     queryKey: ['findMany', API_ENDPOINTS.spells, sources],
     queryFn: async () => {
@@ -184,6 +156,7 @@ export const useSpells = (charClass: string) => {
 
 export const useAllSpells = () => {
   const { findMany } = useAPI();
+  const { sources } = useSourcesList();
   return useQuery({
     queryKey: ['allSpells', API_ENDPOINTS.spells, sources],
     queryFn: async () => {
@@ -255,6 +228,7 @@ export const useMonsters = (
   filter: globalThis.Ref<MonsterFilter> = ref({})
 ) => {
   const { findMany } = useAPI();
+  const { sources } = useSourcesList();
   return useQuery({
     queryKey: ['monsters', API_ENDPOINTS.monsters, sources],
     queryFn: async () => {
@@ -424,6 +398,7 @@ export type MagicItemsFilter = {
 
 export const useMagicItems = (filters: MagicItemsFilter = {}) => {
   const { findMany } = useAPI();
+  const { sources } = useSourcesList();
   const { data } = useQuery({
     queryKey: ['findMany', API_ENDPOINTS.magicitems, sources],
     queryFn: async () => {

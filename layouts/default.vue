@@ -185,6 +185,7 @@ watch($route, () => {
 });
 
 const showModal = ref(false);
+const { sources } = useSourcesList();
 
 const no_selected_sources = computed(() => sources.value.length);
 const { data: documents } = useDocuments();
