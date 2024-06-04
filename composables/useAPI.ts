@@ -55,45 +55,39 @@ export const useAPI = () => {
   };
 };
 
-export const useFindMany = (endpoint: string) => {
+export const useFindMany = (
+  endpoint: MaybeRef<string>,
+  params?: MaybeRef<Record<string, any>>
+) => {
   const { findMany } = useAPI();
   const { sources } = useSourcesList();
   return useQuery({
-    queryKey: ['findMany', endpoint, sources],
-    queryFn: () => findMany(endpoint, sources.value),
-    staleTime: Infinity,
+    queryKey: ['findMany', endpoint, sources, params],
+    queryFn: () => findMany(unref(endpoint), unref(sources), unref(params)),
   });
 };
 
-export const useFindOne = (endpoint: string, slug: string) => {
+export const useFindOne = (
+  endpoint: MaybeRef<string>,
+  slug: MaybeRef<string>
+) => {
   const { get } = useAPI();
   return useQuery({
     queryKey: ['get', endpoint, slug],
-    queryFn: () => get(endpoint, slug),
-    staleTime: Infinity,
+    queryFn: () => get(unref(endpoint), unref(slug)),
   });
 };
 
 export const useSubclass = (className: string, subclass: string) => {
-  const { get } = useAPI();
-
+  const api = useAPI();
   return useQuery({
-    queryKey: ['get', className, subclass],
+    queryKey: ['subclass', className, subclass],
     queryFn: async () => {
-      const _class = await get(API_ENDPOINTS.classes, className);
-      const archetype = _class.archetypes.find((a: any) => a.slug === subclass);
-      if (!archetype) {
-        showError({
-          statusCode: 404,
-          statusMessage: `Archetype ${subclass} not found for class ${className}`,
-        });
-        throw new Error(
-          `Archetype ${subclass} not found for class ${className}`
-        );
-      }
-      return archetype;
+      const class_result = await api.get(API_ENDPOINTS.classes, className);
+      return {
+        result: class_result.archetypes.find((a: any) => a.slug === subclass),
+      };
     },
-    staleTime: Infinity,
   });
 };
 
