@@ -109,7 +109,7 @@ const filters = ref({
   type: null,
 });
 
-const { data: monsters } = useMonsters(filters);
+const { data: monsters } = useAllMonsters(filters);
 const filtered_monsters = computed(() => {
   return monsters.value ? filterMonsters(monsters.value, filters.value) : [];
 });

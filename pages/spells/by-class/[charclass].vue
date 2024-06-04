@@ -39,7 +39,7 @@ import SourceTag from '~/components/SourceTag.vue';
 
 const charclass = useRoute().params.charclass;
 
-const { data: spellsByLevel } = useSpells(charclass);
+const { data: spellsByLevel } = useSpellsByClass(charclass);
 </script>
 
 <style lang="scss" scoped>
