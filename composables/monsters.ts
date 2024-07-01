@@ -1,3 +1,5 @@
+import { keepPreviousData } from '@tanstack/vue-query';
+
 export type MonsterFilter = {
   name?: string;
   challengeLow?: number;
@@ -9,17 +11,35 @@ export type MonsterFilter = {
 };
 
 export const useAllMonsters = () => {
-  const { findMany } = useAPI();
+  const options = reactive({ limit: 5, page: 1, cr: 10 });
+  const api = useAPI();
   const { sources } = useSourcesList();
-  return useQuery({
-    queryKey: ['monsters', API_ENDPOINTS.monsters, sources],
-    queryFn: async () => {
-      const monsters = await findMany(API_ENDPOINTS.monsters, sources.value);
-
-      return monsters;
-    },
+  const { data, isPlaceholderData } = useQuery({
+    queryKey: ['findManyPaginated', API_ENDPOINTS.monsters, sources, options],
+    queryFn: () =>
+      api.findManyPaginated(
+        API_ENDPOINTS.monsters,
+        unref(sources),
+        unref(options)
+      ),
+    placeholderData: keepPreviousData,
   });
+
+  const prevPage = () => {
+    options.page = Math.max(options.page - 1, 1);
+  };
+
+  const nextPage = () => {
+    if (!isPlaceholderData.value && data.value?.next) {
+      options.page = options.page + 1;
+    }
+  };
+
+  //   query.next =
+  return { data, prevPage, nextPage };
 };
+
+// make a more generic useQuery hook
 
 export const filterMonsters = (
   monsters: Record<string, any>[],

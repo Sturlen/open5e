@@ -41,6 +41,25 @@ export const useAPI = () => {
 
       return res.data.results as Record<string, any>[];
     },
+    findManyPaginated: async (
+      endpoint: string,
+      sources: string[],
+      params: Record<string, any> = {}
+    ) => {
+      const res = await api.get(endpoint, {
+        params: {
+          limit: 5000,
+          document__slug__in: sources.join(','),
+          ...params,
+        },
+      });
+
+      return {
+        results: res.data.results as Record<string, any>[],
+        prev: res.data.prev as string | null,
+        next: res.data.next as string | null,
+      };
+    },
     get: async (...parts: string[]) => {
       const route = '/' + parts.join('/');
       const res = await api.get(route);

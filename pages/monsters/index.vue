@@ -5,6 +5,18 @@
       <FilterButton @showFilters="displayFilters = !displayFilters" />
     </div>
     <MonsterFilterBox v-if="displayFilters" v-model="filters" />
+    <div class="pagination">
+      <button
+        @click="prevPage"
+        class="btn btn-primary"
+        aria-label="Previous page"
+      >
+        Previous
+      </button>
+      <button @click="nextPage" class="btn btn-primary" aria-label="Next page">
+        Next
+      </button>
+    </div>
     <div>
       <div>
         <h3
@@ -18,11 +30,11 @@
           <span v-if="filter.length > 0">&nbsp;for {{ filter }}</span> -->
         </h3>
         <div aria-live="assertive" aria-atomic="true" class="sr-only">
-          <span v-if="monsters && monsters.length === 0">No results.</span>
+          <span v-if="data && data.results.length === 0">No results.</span>
         </div>
       </div>
       <!-- <span style="display:block">Sorting by sort={{ currentSortProperty }}, dir={{ currentSortDir }}</span> -->
-      <table v-if="monsters && monsters.length > 0" class="filterable-table">
+      <table v-if="data && data.results.length > 0" class="filterable-table">
         <caption class="sr-only">
           Column headers with buttons are sortable.
         </caption>
@@ -93,7 +105,7 @@
           </tr>
         </tbody>
       </table>
-      <p v-else-if="monsters && monsters.length === 0">No results.</p>
+      <p v-else-if="data && data.results.length === 0">No results.</p>
       <p v-else>Loading...</p>
     </div>
   </section>
@@ -118,9 +130,9 @@ const filters = ref({
   type: null,
 });
 
-const { data: monsters } = useAllMonsters(filters);
+const { data, nextPage, prevPage } = useAllMonsters(filters);
 const filtered_monsters = computed(() => {
-  return monsters.value ? filterMonsters(monsters.value, filters.value) : [];
+  return data.value ? filterMonsters(data.value.results, filters.value) : [];
 });
 const sorted_monsters = computed(() => {
   return sortByField(
