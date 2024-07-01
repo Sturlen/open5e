@@ -1,18 +1,34 @@
 <template>
   <modal-dialog>
     <slot>
-      <h2 class="mb-2 mt-0 border-b-4 border-red-400 pb-2">Select Sources</h2>
-      <fieldset>
-        <legend class="sr-only">Source Selection</legend>
-
-        <div class="space-y-3">
+      <div class="flex w-full justify-between border-b-4 border-red-400">
+        <h2 class="mt-0 pb-2">Select Sources</h2>
+        <div class="serif font-bold">
+          <button
+            class="px-2 py-1 text-blood hover:text-red-800 dark:hover:text-red-400"
+            @click="selectAll()"
+          >
+            All
+          </button>
+          <button
+            class="px-2 py-1 text-granite hover:text-basalt dark:hover:text-smoke"
+            @click="deselectAll()"
+          >
+            None
+          </button>
+        </div>
+      </div>
+      <div class="mt-2">
+        <fieldset>
+          <legend class="sr-only">Source Selection</legend>
           <div
-            v-for="(group, organization) in groupedDocuments"
-            :key="organization"
+            v-for="(publications, organization, index) in groupedDocuments"
+            :key="index"
+            class="space-y-1"
           >
             <h3 class="mt-2">{{ organization }}</h3>
             <div
-              v-for="document in group"
+              v-for="document in publications"
               :key="document.slug"
               class="relative flex items-start"
             >
@@ -27,15 +43,18 @@
                 />
               </div>
               <div class="ml-3 text-sm leading-6">
-                <label :for="document.slug" class="font-medium text-gray-900">
+                <label
+                  :for="document.slug"
+                  class="font-medium text-gray-900 dark:text-white"
+                >
                   {{ document.title }}
                 </label>
                 <source-tag :title="document.title" :text="document.slug" />
               </div>
             </div>
           </div>
-        </div>
-      </fieldset>
+        </fieldset>
+      </div>
     </slot>
     <template #actions>
       <button
@@ -60,11 +79,9 @@
 <script setup>
 import SourceTag from '~/components/SourceTag.vue';
 const { sources, setSources } = useSourcesList();
-
 const emit = defineEmits(['close']);
 
 const selectedSources = ref(sources.value);
-
 const { data: documents } = useDocuments();
 
 const groupedDocuments = computed(() => {
@@ -77,10 +94,19 @@ const groupedDocuments = computed(() => {
 });
 
 function closeModal() {
+  console.log(groupedDocuments);
   emit('close'); // emits a 'close' event to the parent component
 }
 function saveSelection() {
   setSources(selectedSources.value);
   closeModal();
+}
+
+function selectAll() {
+  selectedSources.value = documents.value.map((doc) => doc.slug);
+}
+
+function deselectAll() {
+  selectedSources.value = [];
 }
 </script>

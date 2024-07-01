@@ -10,18 +10,17 @@ export type MonsterFilter = {
   type?: string;
 };
 
-export const useAllMonsters = () => {
+export const useAllMonsters = (params: Record<string, any> = {}) => {
   const options = reactive({ limit: 5, page: 1, cr: 10 });
   const api = useAPI();
   const { sources } = useSourcesList();
   const { data, isPlaceholderData } = useQuery({
     queryKey: ['findManyPaginated', API_ENDPOINTS.monsters, sources, options],
     queryFn: () =>
-      api.findManyPaginated(
-        API_ENDPOINTS.monsters,
-        unref(sources),
-        unref(options)
-      ),
+      api.findManyPaginated(API_ENDPOINTS.monsters, unref(sources), {
+        ...params,
+        ...unref(options),
+      }),
     placeholderData: keepPreviousData,
   });
 

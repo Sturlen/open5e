@@ -2,7 +2,7 @@
   <section class="docs-container container">
     <div class="filter-header-wrapper">
       <h1 class="filter-header">Monster List</h1>
-      <FilterButton @showFilters="displayFilters = !displayFilters" />
+      <FilterButton @show-filters="displayFilters = !displayFilters" />
     </div>
     <MonsterFilterBox v-if="displayFilters" v-model="filters" />
     <div class="pagination">
@@ -33,89 +33,23 @@
           <span v-if="data && data.results.length === 0">No results.</span>
         </div>
       </div>
-      <!-- <span style="display:block">Sorting by sort={{ currentSortProperty }}, dir={{ currentSortDir }}</span> -->
-      <table v-if="data && data.results.length > 0" class="filterable-table">
-        <caption class="sr-only">
-          Column headers with buttons are sortable.
-        </caption>
-        <thead>
-          <tr>
-            <sortable-table-header
-              :current-sort-dir="ariaSort.name"
-              @sort="(dir) => sort('name', dir)"
-            >
-              Name
-            </sortable-table-header>
-
-            <sortable-table-header
-              :current-sort-dir="ariaSort.type"
-              @sort="(dir) => sort('type', dir)"
-            >
-              Type
-            </sortable-table-header>
-
-            <sortable-table-header
-              :current-sort-dir="ariaSort.challenge_rating"
-              @sort="(dir) => sort('cr', dir)"
-            >
-              CR
-            </sortable-table-header>
-
-            <sortable-table-header
-              :current-sort-dir="ariaSort.size"
-              @sort="(dir) => sort('size', dir)"
-            >
-              Size
-            </sortable-table-header>
-
-            <sortable-table-header
-              :current-sort-dir="ariaSort.hit_points"
-              @sort="(dir) => sort('hit_points', dir)"
-            >
-              Hit Points
-            </sortable-table-header>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- TODO: FIX SORTING -->
-          <tr v-for="monster in sorted_monsters" :key="monster.slug">
-            <th>
-              <nuxt-link
-                tag="a"
-                :params="{ id: monster.slug }"
-                :to="`/monsters/${monster.slug}`"
-                :prefetch="false"
-              >
-                {{ monster.name }}
-              </nuxt-link>
-              <source-tag
-                v-if="
-                  monster.document__slug &&
-                  monster.document__slug !== 'wotc-srd'
-                "
-                class=""
-                :title="monster.document__title"
-                :text="monster.document__slug"
-              />
-            </th>
-            <td>{{ monster.type }}</td>
-            <td><fraction-renderer :challenge="monster.challenge_rating" /></td>
-            <td>{{ monster.size }}</td>
-            <td>{{ monster.hit_points }}</td>
-          </tr>
-        </tbody>
-      </table>
-      <p v-else-if="data && data.results.length === 0">No results.</p>
+      <api-results-table
+        v-if="monsters?.results && monsters.results.length > 0"
+        endpoint="monsters"
+        :data="filtered_monsters"
+        :cols="['type', 'cr', 'size', 'hit_points']"
+      />
+      <p v-else-if="monsters?.results && monsters.results.length === 0">
+        No results.
+      </p>
       <p v-else>Loading...</p>
     </div>
   </section>
 </template>
 
 <script setup>
+import ApiResultsTable from '~/components/ApiResultsTable.vue';
 import FilterButton from '~/components/FilterButton.vue';
-import FractionRenderer from '~/components/FractionRenderer.vue';
-import SourceTag from '~/components/SourceTag.vue';
-import SortableTableHeader from '~/components/SortableTableHeader.vue';
 import MonsterFilterBox from '~/components/MonsterFilterBox.vue';
 
 const currentSortDir = ref('ascending');
@@ -130,16 +64,17 @@ const filters = ref({
   type: null,
 });
 
-const { data, nextPage, prevPage } = useAllMonsters(filters);
-const filtered_monsters = computed(() => {
-  return data.value ? filterMonsters(data.value.results, filters.value) : [];
+const {
+  data: monsters,
+  nextPage,
+  prevPage,
+} = useAllMonsters({
+  fields: ['slug', 'name', 'cr', 'type', 'size', 'hit_points'].join(),
 });
-const sorted_monsters = computed(() => {
-  return sortByField(
-    filtered_monsters.value,
-    currentSortProperty.value,
-    currentSortDir.value
-  );
+const filtered_monsters = computed(() => {
+  return monsters.value
+    ? filterMonsters(monsters.value.results, filters.value)
+    : [];
 });
 
 const ariaSort = computed(() => {
@@ -151,11 +86,6 @@ const ariaSort = computed(() => {
     hit_points: getAriaSort('hit_points'),
   };
 });
-
-function sort(prop, value) {
-  currentSortDir.value = value;
-  currentSortProperty.value = prop;
-}
 
 function getAriaSort(columName) {
   if (currentSortProperty.value === columName) {
