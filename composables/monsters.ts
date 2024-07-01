@@ -11,17 +11,24 @@ export type MonsterFilter = {
 };
 
 export const useAllMonsters = (params: Record<string, any> = {}) => {
+  const page_size = 5;
   const options = reactive({ limit: 5, page: 1, cr: 10 });
   const api = useAPI();
   const { sources } = useSourcesList();
   const { data, isPlaceholderData } = useQuery({
     queryKey: ['findManyPaginated', API_ENDPOINTS.monsters, sources, options],
     queryFn: () =>
-      api.findManyPaginated(API_ENDPOINTS.monsters, unref(sources), {
-        ...params,
-        ...unref(options),
-      }),
-    placeholderData: keepPreviousData,
+      api.findManyPaginated(
+        API_ENDPOINTS.monsters,
+        unref(sources),
+        options.page,
+        options.limit,
+        {
+          ...params,
+          ...unref(options),
+        }
+      ),
+    placeholderData: keepPreviousData, // keep previous data in cache while loading
   });
 
   const prevPage = () => {
@@ -35,7 +42,7 @@ export const useAllMonsters = (params: Record<string, any> = {}) => {
   };
 
   //   query.next =
-  return { data, prevPage, nextPage };
+  return { data, prevPage, nextPage, currentPageNo: options.page };
 };
 
 // make a more generic useQuery hook

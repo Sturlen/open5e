@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/vue-query';
 import axios from 'axios';
+import { current } from 'tailwindcss/colors';
 
 export const API_ENDPOINTS = {
   backgrounds: 'v1/backgrounds',
@@ -43,14 +44,17 @@ export const useAPI = () => {
 
       return res.data.results as Record<string, any>[];
     },
+    // needs an object for options, rather than a list of arguments
     findManyPaginated: async (
       endpoint: string,
       sources: string[],
+      pageNo = 1,
+      pageSize: number = 5,
       params: Record<string, any> = {}
     ) => {
       const res = await api.get(endpoint, {
         params: {
-          limit: 5000,
+          limit: pageSize,
           document__slug__in: sources.join(','),
           ...params,
         },
@@ -58,6 +62,9 @@ export const useAPI = () => {
 
       return {
         results: res.data.results as Record<string, any>[],
+        count: res.data.count as number,
+        currentPageNo: pageNo,
+        lastPageNo: Math.ceil(res.data.count / pageSize),
         prev: res.data.prev as string | null,
         next: res.data.next as string | null,
       };

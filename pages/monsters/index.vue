@@ -5,18 +5,6 @@
       <FilterButton @show-filters="displayFilters = !displayFilters" />
     </div>
     <MonsterFilterBox v-if="displayFilters" v-model="filters" />
-    <div class="pagination">
-      <button
-        @click="prevPage"
-        class="btn btn-primary"
-        aria-label="Previous page"
-      >
-        Previous
-      </button>
-      <button @click="nextPage" class="btn btn-primary" aria-label="Next page">
-        Next
-      </button>
-    </div>
     <div>
       <div>
         <h3
@@ -30,15 +18,24 @@
           <span v-if="filter.length > 0">&nbsp;for {{ filter }}</span> -->
         </h3>
         <div aria-live="assertive" aria-atomic="true" class="sr-only">
-          <span v-if="data && data.results.length === 0">No results.</span>
+          <span v-if="monsters && monsters.results.length === 0"
+            >No results.</span
+          >
         </div>
       </div>
-      <api-results-table
-        v-if="monsters?.results && monsters.results.length > 0"
-        endpoint="monsters"
-        :data="filtered_monsters"
-        :cols="['type', 'cr', 'size', 'hit_points']"
-      />
+      <template v-if="monsters?.results && monsters.results.length > 0">
+        <api-results-table
+          endpoint="monsters"
+          :data="filtered_monsters"
+          :cols="['type', 'cr', 'size', 'hit_points']"
+        />
+        <table-nav
+          :current-page-no="monsters.currentPageNo"
+          :last-page-no="monsters.lastPageNo"
+          @next="nextPage()"
+          @prev="prevPage()"
+        />
+      </template>
       <p v-else-if="monsters?.results && monsters.results.length === 0">
         No results.
       </p>
