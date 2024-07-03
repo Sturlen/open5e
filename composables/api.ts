@@ -112,6 +112,7 @@ export const useFindPaginated = (options: {
   initialPage?: MaybeRef<number>;
   sortByProperty?: MaybeRef<string>;
   isSortDescending?: MaybeRef<boolean>;
+  filters?: MaybeRef<Record<string, any>>;
   params?: MaybeRef<Record<string, any>>;
 }) => {
   const {
@@ -120,6 +121,7 @@ export const useFindPaginated = (options: {
     initialPage = 1,
     sortByProperty = 'name',
     isSortDescending = false,
+    filters = {},
     params = {},
   } = options;
   const pageNo = ref(unref(initialPage));
@@ -134,6 +136,7 @@ export const useFindPaginated = (options: {
       pageNo,
       sortByProperty,
       isSortDescending,
+      filters,
       params,
     ],
     placeholderData: keepPreviousData,
@@ -145,7 +148,7 @@ export const useFindPaginated = (options: {
         sortByProperty: unref(sortByProperty),
         isSortDescending: unref(isSortDescending),
         itemsPerPage: unref(itemsPerPage),
-        queryParams: unref(params),
+        queryParams: { ...unref(params), ...unref(filters) },
       }),
   });
 
