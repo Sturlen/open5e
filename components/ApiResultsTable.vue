@@ -70,11 +70,15 @@ const sortBy = ref('name');
 const isSortDescending = ref(false);
 
 const props = defineProps({
+  // for interal frontend links
   endpoint: { type: String, required: true },
+  // which API endpoint to call
   apiEndpoint: { type: String, required: true },
   itemsPerPage: { type: Number, default: 50 },
   cols: { type: Array, default: () => [] },
   transform: { type: Function, default: (x) => x },
+  // addional fields that will be included in the API, but will not have columns added to the table
+  fields: { type: Array, default: () => [] },
 });
 
 const filter = defineModel({ default: () => ({}), type: Object });
@@ -88,7 +92,7 @@ const { data, pageNo, firstPage, prevPage, nextPage, lastPage, lastPageNo } =
     filter: filter,
     transform: props.transform,
     params: {
-      fields: ['slug', 'name'].concat(props.cols).join(),
+      fields: ['slug', 'name'].concat(props.cols).concat(props.fields).join(),
     },
   });
 
