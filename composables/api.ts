@@ -9,7 +9,7 @@ export const API_ENDPOINTS = {
   documents: 'v1/documents',
   feats: 'v1/feats',
   magicitems: 'v1/magicitems',
-  monsters: 'v1/monsters',
+  monsters: 'v2/creatures',
   races: 'v1/races',
   search: 'v2/search/',
   sections: 'v1/sections',
@@ -51,6 +51,7 @@ export const useAPI = () => {
       sortByProperty?: string;
       isSortDescending?: boolean;
       queryParams?: Record<string, any>;
+      transform?: (data: Record<string, any>[]) => Record<string, any>[];
     }) => {
       const {
         endpoint,
@@ -111,6 +112,7 @@ export const useFindPaginated = (options: {
   sortByProperty?: MaybeRef<string>;
   isSortDescending?: MaybeRef<boolean>;
   filter?: MaybeRef<Record<string, any>>;
+  transform?: (data: Record<string, any>[]) => Record<string, any>[];
   params?: MaybeRef<Record<string, any>>;
 }) => {
   const {
@@ -147,6 +149,7 @@ export const useFindPaginated = (options: {
         isSortDescending: unref(isSortDescending),
         itemsPerPage: unref(itemsPerPage),
         queryParams: { ...unref(params), ...unref(filter) },
+        transform: options.transform,
       }),
   });
 

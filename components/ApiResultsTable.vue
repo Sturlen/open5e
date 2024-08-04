@@ -74,6 +74,7 @@ const props = defineProps({
   apiEndpoint: { type: String, required: true },
   itemsPerPage: { type: Number, default: 50 },
   cols: { type: Array, default: () => [] },
+  transform: { type: Function, default: (x) => x },
 });
 
 const filter = defineModel({ default: () => ({}), type: Object });
@@ -85,6 +86,7 @@ const { data, pageNo, firstPage, prevPage, nextPage, lastPage, lastPageNo } =
     sortByProperty: sortBy,
     isSortDescending: isSortDescending,
     filter: filter,
+    transform: props.transform,
     params: {
       fields: ['slug', 'name'].concat(props.cols).join(),
     },
