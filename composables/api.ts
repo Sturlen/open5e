@@ -51,7 +51,7 @@ export const useAPI = () => {
       sortByProperty?: string;
       isSortDescending?: boolean;
       queryParams?: Record<string, any>;
-      transform?: (data: Record<string, any>[]) => Record<string, any>[];
+      transform?: (data: Record<string, any>) => Record<string, any>;
     }) => {
       const {
         endpoint,
@@ -112,7 +112,7 @@ export const useFindPaginated = (options: {
   sortByProperty?: MaybeRef<string>;
   isSortDescending?: MaybeRef<boolean>;
   filter?: MaybeRef<Record<string, any>>;
-  transform?: (data: Record<string, any>[]) => Record<string, any>[];
+  transform?: MaybeRef<(data: Record<string, any>) => Record<string, any>>;
   params?: MaybeRef<Record<string, any>>;
 }) => {
   const {
@@ -149,7 +149,7 @@ export const useFindPaginated = (options: {
         isSortDescending: unref(isSortDescending),
         itemsPerPage: unref(itemsPerPage),
         queryParams: { ...unref(params), ...unref(filter) },
-        transform: options.transform,
+        transform: unref(options.transform),
       }),
   });
 
