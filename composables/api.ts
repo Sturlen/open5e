@@ -86,7 +86,7 @@ export const useAPI = () => {
     },
     get: async (...parts: string[]) => {
       const route = '/' + parts.join('/');
-      const res = await api.get(route);
+      const res = await api.get(route, { params: { depth: 1 } });
       return res.data as Record<string, any>;
     },
   };

@@ -93,6 +93,7 @@ const { data, pageNo, firstPage, prevPage, nextPage, lastPage, lastPageNo } =
     transform: props.transform,
     params: {
       fields: ['slug', 'name'].concat(props.cols).concat(props.fields).join(),
+      depth: 1,
     },
   });
 

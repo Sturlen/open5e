@@ -51,7 +51,7 @@ function transform(creature) {
   return {
     ...creature,
     slug: creature.key,
-    type: new URL(creature.type).pathname.split('/').at(-2),
+    type: creature.type.name,
     size: creature.size.name,
     challenge_rating_decimal: creature.challenge_rating_text,
   };

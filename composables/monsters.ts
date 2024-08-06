@@ -33,14 +33,28 @@ export const useMonster = (slug: string) => {
     queryKey: ['get', API_ENDPOINTS.monsters, slug],
     queryFn: async () => {
       const monster = await get(API_ENDPOINTS.monsters, slug);
-      monster.abilities = ABILITY_SCORE_NAMES.map((ability) => ({
-        name: ability,
-        shortName: ability.slice(0, 3),
-        score: monster[ability],
-        modifier: formatMod(calcMod(monster[ability])),
-        save: monster[`${ability}_save`],
-      }));
-      return monster as Record<string, string>;
+      console.log('monster', monster);
+
+      return {
+        slug: monster.key,
+        size: monster.size.name,
+        type: monster.type.name,
+        subtype: undefined, // TODO: Implement subtypes
+        alignment: monster.alignment,
+        name: monster.name,
+        hit_points: monster.hit_points,
+        hit_dice: monster.hit_dice,
+        speed: monster.speed,
+        armor_class: monster.armor_class,
+        actions: monster.actions,
+        abilities: ABILITY_SCORE_NAMES.map((ability) => ({
+          name: ability,
+          shortName: ability.slice(0, 3),
+          score: monster.ability_scores[ability],
+          modifier: formatMod(calcMod(monster.ability_scores[ability])),
+          save: monster[`${ability}_save`],
+        })),
+      };
     },
   });
 };
