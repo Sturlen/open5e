@@ -35,6 +35,9 @@ export const useMonster = (slug: string) => {
       const monster = await get(API_ENDPOINTS.monsters, slug);
       console.log('monster', monster);
 
+      const speed = { ...monster.speed };
+      delete speed.unit; // Unit is not used right now
+
       return {
         slug: monster.key,
         size: monster.size.name,
@@ -44,7 +47,7 @@ export const useMonster = (slug: string) => {
         name: monster.name,
         hit_points: monster.hit_points,
         hit_dice: monster.hit_dice,
-        speed: monster.speed,
+        speed: speed,
         armor_class: monster.armor_class,
         actions: monster.actions,
         abilities: ABILITY_SCORE_NAMES.map((ability) => ({
